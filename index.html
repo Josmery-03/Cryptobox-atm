@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoBox ATM</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="atm-container">
+        <header class="atm-header">
+            <div class="logo-container">
+                <span class="crypto-icon">₿</span>
+                <h1>CryptoBox</h1>
+            </div>
+            <p>Tu billetera digital</p>
+        </header>
+
+        <main class="atm-body">
+            <section class="saldo-card">
+                <span>Saldo Billetera</span>
+                <h2 id="saldoDisplay">100.00 TKIA</h2>
+                <small id="usuarioDisplay">Usuario: Estudiante_UCNE</small>
+            </section>
+
+            <form class="atm-form">
+                <label for="tokenId">Código del Token Físico (Depósito):</label>
+                <input type="text" id="tokenId" placeholder="Ej: BOX-001">
+
+                <label for="destinatario">Usuario Destinatario (Envío):</label>
+                <input type="text" id="destinatario" placeholder="Nombre o wallet destino">
+
+                <label for="monto">Cantidad (TKIA):</label>
+                <input type="number" id="monto" min="1" placeholder="Monto de la operación">
+
+                <div class="button-group">
+                    <button type="button" id="btnDepositar" class="btn btn-verde">Depositar</button>
+                    <button type="button" id="btnEnviar" class="btn btn-verde">Enviar</button>
+                    <button type="button" id="btnRetirar" class="btn btn-rojo">Retirar</button>
+                    <button type="button" id="btnHistorial" class="btn btn-gris">Ver historial</button>
+                </div>
+            </form>
+
+            <div id="mensajeEstado" class="status-message"></div>
+
+            <div id="historialBox" class="historial-box hidden">
+                <h4>Historial de transacciones</h4>
+                <ul id="listaHistorial"></ul>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

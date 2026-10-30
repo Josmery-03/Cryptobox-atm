@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoBox - Acceso</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="atm-container">
+        <header class="atm-header">
+            <div class="logo-container">
+                <span class="crypto-icon">₿</span>
+                <h1>CryptoBox</h1>
+            </div>
+            <p>Tu mundo digital, más cerca</p>
+        </header>
+
+        <main class="atm-body">
+            <!-- Pestañas para alternar entre Iniciar Sesión y Registro -->
+            <div class="auth-tabs">
+                <button type="button" id="tabLogin" class="tab-btn active" onclick="cambiarTab('login')">Ingresar</button>
+                <button type="button" id="tabRegister" class="tab-btn" onclick="cambiarTab('register')">Crear Cuenta</button>
+            </div>
+
+            <!-- Formulario de Ingreso / Registro -->
+            <form id="authForm" class="atm-form">
+                <div id="campoNombreContainer" class="hidden">
+                    <label for="nombreRegistro">Nombre completo:</label>
+                    <input type="text" id="nombreRegistro" placeholder="Ej: Josmery Bueno">
+                </div>
+
+                <label for="userEmail">Usuario o Correo:</label>
+                <input type="text" id="userEmail" placeholder="Ej: estudiante_ucne" required>
+
+                <label for="userPassword">Contraseña:</label>
+                <input type="password" id="userPassword" placeholder="••••••••" required>
+
+                <button type="submit" id="btnSubmitAuth" class="btn btn-verde" style="margin-top: 10px;">Iniciar Sesión</button>
+            </form>
+
+            <div id="mensajeEstado" class="status-message"></div>
+        </main>
+    </div>
+
+    <script>
+        let esRegistro = false;
+
+        function cambiarTab(tipo) {
+            esRegistro = (tipo === 'register');
+            const btnSubmit = document.getElementById('btnSubmitAuth');
+            const campoNombre = document.getElementById('campoNombreContainer');
+            const tabLogin = document.getElementById('tabLogin');
+            const tabRegister = document.getElementById('tabRegister');
+
+            if (esRegistro) {
+                campoNombre.classList.remove('hidden');
+                btnSubmit.textContent = 'Registrarse y Crear Wallet';
+                tabRegister.classList.add('active');
+                tabLogin.classList.remove('active');
+            } else {
+                campoNombre.classList.add('hidden');
+                btnSubmit.textContent = 'Iniciar Sesión';
+                tabLogin.classList.add('active');
+                tabRegister.classList.remove('active');
+            }
+        }
+
+        document.getElementById('authForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = document.getElementById('userEmail').value.trim();
+            const pass = document.getElementById('userPassword').value.trim();
+            const mensajeEstado = document.getElementById('mensajeEstado');
+
+            if (!user || !pass) {
+                mensajeEstado.textContent = "Error: Complete todos los campos.";
+                mensajeEstado.className = "status-message status-error";
+                return;
+            }
+
+            if (esRegistro) {
+                // Guardar usuario simulado en localStorage
+                localStorage.setItem('cryptoBoxUser', user);
+                localStorage.setItem('cryptoBoxPass', pass);
+                mensajeEstado.textContent = "¡Cuenta creada con éxito! Redirigindo...";
+                mensajeEstado.className = "status-message status-exito";
+                setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+            } else {
+                // Validar acceso (si no hay registros previos, dejamos entrar por defecto para la demo)
+                const savedUser = localStorage.getItem('cryptoBoxUser') || 'Estudiante_UCNE';
+                localStorage.setItem('cryptoBoxUser', savedUser);
+                
+                mensajeEstado.textContent = "¡Acceso concedido! Bienvenido.";
+                mensajeEstado.className = "status-message status-exito";
+                setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+            }
+        });
+    </script>
+</body>
+</html>
