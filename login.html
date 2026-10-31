@@ -17,13 +17,11 @@
         </header>
 
         <main class="atm-body">
-            <!-- Pestañas para alternar entre Iniciar Sesión y Registro -->
             <div class="auth-tabs">
                 <button type="button" id="tabLogin" class="tab-btn active" onclick="cambiarTab('login')">Ingresar</button>
                 <button type="button" id="tabRegister" class="tab-btn" onclick="cambiarTab('register')">Crear Cuenta</button>
             </div>
 
-            <!-- Formulario de Ingreso / Registro -->
             <form id="authForm" class="atm-form">
                 <div id="campoNombreContainer" class="hidden">
                     <label for="nombreRegistro">Nombre completo:</label>
@@ -52,6 +50,8 @@
             const campoNombre = document.getElementById('campoNombreContainer');
             const tabLogin = document.getElementById('tabLogin');
             const tabRegister = document.getElementById('tabRegister');
+            const mensajeEstado = document.getElementById('mensajeEstado');
+            mensajeEstado.style.display = 'none';
 
             if (esRegistro) {
                 campoNombre.classList.remove('hidden');
@@ -68,9 +68,10 @@
 
         document.getElementById('authForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const user = document.getElementById('userEmail').value.trim();
+            const user = document.getElementById('userEmail').value.trim().toLowerCase();
             const pass = document.getElementById('userPassword').value.trim();
             const mensajeEstado = document.getElementById('mensajeEstado');
+            mensajeEstado.style.display = 'block';
 
             if (!user || !pass) {
                 mensajeEstado.textContent = "Error: Complete todos los campos.";
@@ -78,19 +79,35 @@
                 return;
             }
 
+            let usuarios = JSON.parse(localStorage.getItem('cryptoBoxUsuarios')) || {};
+
             if (esRegistro) {
-                // Guardar usuario simulado en localStorage
-                localStorage.setItem('cryptoBoxUser', user);
-                localStorage.setItem('cryptoBoxPass', pass);
-                mensajeEstado.textContent = "¡Cuenta creada con éxito! Redirigindo...";
+                if (usuarios[user]) {
+                    mensajeEstado.textContent = "Error: Este usuario ya está registrado.";
+                    mensajeEstado.className = "status-message status-error";
+                    return;
+                }
+                usuarios[user] = {
+                    password: pass,
+                    saldo: 100.00,
+                    historial: ['Cuenta creada: +100.00 TKIA (Bono inicial)']
+                };
+                localStorage.setItem('cryptoBoxUsuarios', JSON.stringify(usuarios));
+                localStorage.setItem('cryptoBoxCurrentUser', user);
+
+                mensajeEstado.textContent = "¡Cuenta creada con éxito! Redirigiendo...";
                 mensajeEstado.className = "status-message status-exito";
                 setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+
             } else {
-                // Validar acceso (si no hay registros previos, dejamos entrar por defecto para la demo)
-                const savedUser = localStorage.getItem('cryptoBoxUser') || 'Estudiante_UCNE';
-                localStorage.setItem('cryptoBoxUser', savedUser);
-                
-                mensajeEstado.textContent = "¡Acceso concedido! Bienvenido.";
+                if (!usuarios[user] || usuarios[user].password !== pass) {
+                    mensajeEstado.textContent = "Error: Usuario o contraseña incorrectos.";
+                    mensajeEstado.className = "status-message status-error";
+                    return;
+                }
+
+                localStorage.setItem('cryptoBoxCurrentUser', user);
+                mensajeEstado.textContent = "¡Acceso concedido! Redirigiendo...";
                 mensajeEstado.className = "status-message status-exito";
                 setTimeout(() => { window.location.href = 'index.html'; }, 1000);
             }
